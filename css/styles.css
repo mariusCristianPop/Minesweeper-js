@@ -1,0 +1,21 @@
+table {
+  display: table;
+  border: 1px solid black;
+  padding: 5px;
+}
+td {
+  border: 1px solid black;
+  background-color: grey;
+  width: 50px;
+  height: 50px;
+}
+
+tr {
+  display: table-row;
+  text-align:center;
+}
+
+img {
+  height: 35px;
+  width: 35px;
+}
