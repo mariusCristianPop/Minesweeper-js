@@ -60,4 +60,39 @@ function showMatrix() {
         document.write("<br>");
     }
 }
+
+function countNeighbourBombs(i, j) {
+    let counter = 0;
+    if (gfg[i][j + 1]) {
+        counter++;
+    }
+    if (gfg[i - 1][j + 1]) {
+        counter++;
+    }
+    if (gfg[i - 1][j - 1]) {
+        counter++;
+    }
+    if (gfg[i + 1][j - 1]) {
+        counter++;
+    }
+    if (gfg[i + 1][j + 1]) {
+        counter++;
+    }
+    if (gfg[i - 1][j]) {
+        counter++;
+    }
+    if (gfg[i][j - 1]) {
+        counter++;
+    }
+    if (gfg[i + 1][j]) {
+        counter++;
+    }
+    return counter;
+}
+
+function hasBombsAround(i, j) {
+    return (gfg[i][j + 1]) || (gfg[i - 1][j + 1]) || (gfg[i - 1][j]) || (gfg[i - 1][j - 1]) ||
+            (gfg[i][j - 1]) || (gfg[i + 1][j - 1]) || (gfg[i + 1][j]) || (gfg[i + 1][j + 1]);
+
+}
   
