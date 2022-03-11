@@ -150,9 +150,10 @@ function leftClick(i, j) {
         //revealBombs()
         sumOfBombs()
         revealCell(i, j)
+        showNoBombCells(i, j)
         firstClick = false
     } else if (gameBoard[i][j].getContent() == 'bomb') {
-        console.log("you lost")
+        addBomb(i, j)
     } else {
         revealCell(i, j)
         showNoBombCells(i, j)
