@@ -147,7 +147,7 @@ function leftClick(i, j) {
     tableCellId.setAttribute("onclick", "")
     if (firstClick) {
         deployBombs(posibleNumberOfBombs)
-        revealBombs()
+        //revealBombs()
         sumOfBombs()
         revealCell(i, j)
         firstClick = false
