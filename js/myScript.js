@@ -1,15 +1,14 @@
 document.addEventListener("DOMContentLoaded", function () {
     // wait for the html page to load before executing the script or else appending to body will result in an error
     Create2DArray(dim)
-    deployBombs(posibleNumberOfBombs)
     tableCreate()
-    //revealBombs()
-    sumOfBombs()
     
 })
 const dim = 9
-var posibleNumberOfBombs = 20
+var posibleNumberOfBombs = 5
 var gameBoard = []
+var firstClick = true;
+
 
 // Initialize cell object
 class Cell {
@@ -58,7 +57,7 @@ function placeBomb() {
 function deployBombs(numberOfBombs) {
     for (let i = 0; i < dim && numberOfBombs; ++i) {
         for (let j = 0; j < dim && numberOfBombs; ++j) {
-            if (gameBoard[i][j].getContent() == "empty" && placeBomb()) {
+            if (gameBoard[i][j].getState() == "notClicked" && placeBomb()) {
                 gameBoard[i][j].updateContent("bomb")
                 --numberOfBombs
             }
@@ -106,7 +105,7 @@ function sumOfBombs() {
 // create the HTML table
 function tableCreate() {
     const body = document.body,
-        table = document.createElement('table')
+    table = document.createElement('table')
     for (let i = 0; i < dim; i++) {
         const tr = table.insertRow()
         for (let j = 0; j < dim; j++) {
@@ -146,8 +145,14 @@ function addFlag(i, j) {
 function leftClick(i, j) {
     var tableCellId = document.getElementById(`${i},${j}`)
     tableCellId.setAttribute("onclick", "")
-    if (gameBoard[i][j].getContent() == "bomb") {
-        addBomb(i, j)
+    if (firstClick) {
+        deployBombs(posibleNumberOfBombs)
+        revealBombs()
+        sumOfBombs()
+        revealCell(i, j)
+        firstClick = false
+    } else if (gameBoard[i][j].getContent() == 'bomb') {
+        console.log("you lost")
     } else {
         revealCell(i, j)
         showNoBombCells(i, j)
