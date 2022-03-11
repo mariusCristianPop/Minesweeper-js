@@ -1,35 +1,59 @@
 document.addEventListener("DOMContentLoaded", function () {
     // wait for the html page to load before executing the script or else appending to body will result in an error;
-    deployBombs(numberOfBombs);
+    Create2DArray(dim);
+    deployBombs(posibleNumberOfBombs);
     tableCreate();
+    revealBombs()
+    
 });
+const dim = 9;
+var posibleNumberOfBombs = 5;
+var gameBoard = [];
 
-const numberOfBombs = 35;
-const arrayDim = 12;
-
-
-// Create one dimensional array
-var gameBoardArray = new Array(arrayDim);
-// Loop to create 2D array using 1D array
-for (var i = 0; i < gameBoardArray.length; i++) {
-    gameBoardArray[i] = new Array(arrayDim);
-}
-  
-// Loop to initialize 2D array elements.
-for (var i = 0; i < arrayDim; i++) {
-    for (var j = 0; j < arrayDim; j++) {
-        gameBoardArray[i][j] = 0;
+// Initialize cell object
+class Cell {
+    constructor(state, contains) {
+        this.state = state;
+        this.contains = contains;
+    }
+    updateContent(content) {
+        this.contains = content;
+    }
+    updateState(newState) {
+        this.state = newState;
+    }
+    getState() {
+        return this.state;
+    }
+    getContent() {
+        return this.contains;
     }
 }
 
-// Deploy bombs in table
+function Create2DArray(dim) {
+    for (let row = 0; row < dim; ++row) {
+        gameBoard.push(new Array(dim).fill(new Cell('', ''))); // initializing cells. 
+        for (let col = 0; col < dim; ++col) {
+            gameBoard[row][col] = new Cell("notClicked", "empty"); // assigning a new Cell object to positions from 1 - 10 array. 
+        }
+    };
+    console.table(gameBoard);
+}
+
+// Decide if a table cell shall hold a bomb or not based on a given probability
+function placeBomb() {
+    let notRandomNumbers = [0, 0, 0, 0, 0, 0, 0, 0, 0, 1]; // Here I decide the probability of 0's or 1's. 
+    let id = Math.floor(Math.random() * notRandomNumbers.length);
+    return notRandomNumbers[id];
+}
+
 function deployBombs(numberOfBombs) {
-    for (var i = 1; i < arrayDim - 1 && numberOfBombs > 0; i++) {
-        for (var j = 1; j < arrayDim - 1 && numberOfBombs > 0; j++) {
-            if (gameBoardArray[i][j] != 1 && placeBomb()) {
-                gameBoardArray[i][j] = 1;
+    for (let i = 0; i < dim && numberOfBombs; ++i) {
+        for (let j = 0; j < dim && numberOfBombs; ++j) {
+            if (gameBoard[i][j].getContent() == "empty" && placeBomb()) {
+                gameBoard[i][j].updateContent("bomb");
                 --numberOfBombs;
-            }            
+            }
         }
     }
     if (numberOfBombs) { // if not all bombs deployed
@@ -37,102 +61,222 @@ function deployBombs(numberOfBombs) {
     }
 }
 
-// Decide if a table cell shall hold a bomb or not based on a given probability
-function placeBomb() {
-    let notRandomNumbers = [0, 0, 0, 0, 0, 0, 0, 1, 1, 1]; // Here I decide the probability of 0's or 1's. 
-    let id = Math.floor(Math.random() * notRandomNumbers.length);
-    return notRandomNumbers[id];
-}
-
-// Counts the bombs all around a given cell
-function countNeighbourBombs(i, j) {
-    let counter = 0;
-    if (i > 0 && j > 0) {
-        if (gameBoardArray[i][j + 1]) {
-            counter++;
-        }
-        if (gameBoardArray[i - 1][j + 1]) {
-            counter++;
-        }
-        if (gameBoardArray[i - 1][j - 1]) {
-            counter++;
-        }
-        if (gameBoardArray[i + 1][j - 1]) {
-            counter++;
-        }
-        if (gameBoardArray[i + 1][j + 1]) {
-            counter++;
-        }
-        if (gameBoardArray[i - 1][j]) {
-            counter++;
-        }
-        if (gameBoardArray[i][j - 1]) {
-            counter++;
-        }
-        if (gameBoardArray[i + 1][j]) {
-            counter++;
-        }
-    }
-    return counter;
-}
-
 // create the HTML table
 function tableCreate() {
     const body = document.body,
         table = document.createElement('table');
-
-    for (let i = 1; i <= arrayDim - 2; i++) {
+    for (let i = 0; i < dim; i++) {
         const tr = table.insertRow();
-        for (let j = 1; j <= arrayDim - 2; j++) {
+        for (let j = 0; j < dim; j++) {
             const td = tr.insertCell();
-            td.setAttribute("id", i * 10 + j);
+            td.setAttribute("id", `${i},${j}`);
             td.addEventListener("contextmenu", (event) => {
                 event.preventDefault();
                 addFlag(i, j);
             }, { once: true }); // added so that this event listener only executes once and ads a flag
             td.setAttribute("onclick", `leftClick(${i}, ${j})`);
-
         }
     }
     body.appendChild(table);
 }
 
+// helper to show where the bombs are located for debugging
+function revealBombs() {
+    for (let i = 0; i < dim; i++) {
+        for (let j = 0; j < dim; j++) {
+            if (gameBoard[i][j].getContent() == "bomb") {
+                addBomb(i, j)
+            }
+        }
+    }
+}
+
 // add a flag on HTML table on right click
 function addFlag(i, j) {
-    gameBoardArray[i][j] = 0;
-    var tableCellId = document.getElementById(`${i * 10 + j}`);
+    gameBoard[i][j].updateState("clicked");
+    var tableCellId = document.getElementById(`${i},${j}`);
     var image = document.createElement("img");
     image.src = "assets/icons/flag.png";
     tableCellId.appendChild(image);
 }
 
+// on left click function
+function leftClick(i, j) {
+    var tableCellId = document.getElementById(`${i},${j}`);
+    tableCellId.setAttribute("onclick", "");
+    if (gameBoard[i][j].getContent() == "bomb") {
+        addBomb(i, j)
+    } else {
+        revealCell(i, j)
+        showNoBombCells(i, j)
+    }
+}
+
+// check if all sorrounding cells are free of bombs
+function checkSurroundingCells(i, j) {
+    return (verifyN(i, j) && verifyNE(i, j) && verifyNW(i, j) &&
+        verifyS(i, j) && verifySE(i, j) && verifySW(i, j) &&
+        verifyE(i, j) && verifyW(i, j))
+}
+
+// clear all cells and their neighbours recursively
+function showNoBombCells(i, j) { // starting from i, j show all cells that have no bombs around
+    if (checkSurroundingCells(i, j)) {
+        revealCell(i, j)
+        if (i > 0 && getState(i - 1, j) == "notClicked" && checkSurroundingCells(i - 1, j)) { // North
+            revealCell(i - 1, j);
+            showNoBombCells(i - 1, j)
+        }
+        if (i > 0 && j < dim - 1 && getState(i - 1, j + 1) == "notClicked" && checkSurroundingCells(i - 1, j + 1)) { // NorthE
+            revealCell(i - 1, j + 1);
+            showNoBombCells(i - 1, j + 1);
+        }
+        if (i > 0 && j > 0 && getState(i - 1, j - 1) == "notClicked" && checkSurroundingCells(i - 1, j - 1)) {
+            revealCell(i - 1, j - 1)
+            showNoBombCells(i - 1, j - 1)
+        }
+        if (i < dim - 1 && getState(i + 1, j) == "notClicked" && checkSurroundingCells(i + 1, j)) { // South
+            revealCell(i + 1, j);
+            showNoBombCells(i + 1, j);
+        }
+        if (i < dim - 1 && j < dim - 1 && getState(i + 1, j + 1) == "notClicked" && checkSurroundingCells(i + 1, j + 1)) { //SouthE
+            revealCell(i + 1, j + 1);
+            showNoBombCells(i + 1, j + 1);
+        }
+        if (i < dim - 1 && j > 0 && getState(i + 1, j - 1) == "notClicked" && checkSurroundingCells(i + 1, j - 1)) { //SouthW
+            revealCell(i + 1, j - 1);
+            showNoBombCells(i + 1, j - 1);
+        }
+        if (j < dim - 1 && getState(i, j + 1) == "notClicked" && checkSurroundingCells(i, j + 1)) { //East
+            revealCell(i, j + 1);
+            showNoBombCells(i, j + 1);
+        }
+        if (j > 0 && getState(i, j - 1) == "notClicked" && checkSurroundingCells(i, j - 1)) { //West
+            revealCell(i, j - 1);
+            showNoBombCells(i, j - 1);
+        }
+    } else {
+        return
+    }
+    return
+}
+
+
+//North
+function verifyN(i, j) { // returns true when no bomb is detected
+    if (i > 0) {
+        if (getContent(i - 1, j) == "bomb") {
+            return false;
+        }
+        return true;
+    }
+    return true;
+}
+
+function verifyNE(i, j) {
+    if (i > 0 && j < dim - 1) {
+        if (getContent(i - 1, j + 1) == "bomb") {
+            return false;
+        }
+        return true;
+    }
+    return true;
+}
+
+function verifyNW(i, j) {
+    if (i > 0 && j > 0) {
+        if (getContent(i - 1, j - 1) == "bomb") {
+            return false;
+        }
+        return true;
+    }
+    return true;
+}
+
+//South
+function verifyS(i, j) {
+      if (i < dim - 1) {
+        if (getContent(i + 1, j) == "bomb") {
+            return false;
+        }
+        return true;
+    }
+    return true;
+}
+
+function verifySE(i, j) {
+       if (i < dim - 1 && j < dim - 1) {
+        if (getContent(i + 1, j + 1) == "bomb") {
+            return false;
+        }
+        return true;
+    }
+    return true;
+}
+
+function verifySW(i, j) {
+       if (i < dim - 1 && j > 0) {
+        if (getContent(i + 1, j - 1) == "bomb") {
+            return false;
+        }
+        return true;
+    }
+    return true;
+}
+
+//East
+function verifyE(i, j) {
+      if (j < dim - 1) {
+        if (getContent(i, j + 1) == "bomb") {
+            return false;
+        }
+        return true;
+    }
+    return true;
+}
+
+// West
+function verifyW(i, j) {
+      if (j > 0) {
+        if (getContent(i, j - 1) == "bomb") {
+            return false;
+        }
+        return true;
+    }
+    return true;
+}
+
 // add a bomb on HTML table
 function addBomb(i, j) {
-    console.log(`left click on ${i} ${j}`);
-    var tableCellId = document.getElementById(`${i * 10 + j}`);
+    gameBoard[i][j].updateState("inactive");
+    var tableCellId = document.getElementById(`${i},${j}`);
     tableCellId.style.background = "red";
     var image = document.createElement("img");
     image.src = "assets/icons/bomb.png";
     tableCellId.appendChild(image);
 }
 
-// add the number of adiacent cells that hav a bomb on HTML table
-function addNumber(i, j) {
-    let number = countNeighbourBombs(i, j);
-    var tableCellId = document.getElementById(`${i * 10 + j}`);
-    tableCellId.style.background = "white";
-    tableCellId.innerText = number;
+// reveal the cell
+function revealCell(i, j) {
+    if (gameBoard[i][j].getState() != "clicked") {
+        var tableCellId = document.getElementById(`${i},${j}`);
+        tableCellId.style.background = "white";
+        tableCellId.setAttribute("onclick", "");
+        gameBoard[i][j].updateState("clicked")
+    } else {
+        return
+    }
 }
 
-// test game conditions when left click is detected
-function leftClick(i, j) {
-    console.log("left click detected " + i + " " + j);
-    var tableCellId = document.getElementById(`${i * 10 + j}`);
-    tableCellId.setAttribute("onclick", "");
-    if (gameBoardArray[i][j] == 1) {
-        addBomb(i, j);
-    } else {
-        addNumber(i, j);
-    } 
+// get the content of a cell
+function getContent(i, j) {
+    if ((j <= dim - 1) && (i <= dim - 1)) {
+        return gameBoard[i][j].getContent();
+    }
+    
 }
-  
+// get the state of a cell
+function getState(i, j) {
+    return gameBoard[i][j].getState();
+}
+
