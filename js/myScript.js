@@ -1,83 +1,125 @@
 document.addEventListener("DOMContentLoaded", function () {
-    // wait for the html page to load before executing the script or else appending to body will result in an error;
-    Create2DArray(dim);
-    deployBombs(posibleNumberOfBombs);
-    tableCreate();
-    revealBombs()
+    // wait for the html page to load before executing the script or else appending to body will result in an error
+    Create2DArray(dim)
+    deployBombs(posibleNumberOfBombs)
+    tableCreate()
+    //revealBombs()
+    sumOfBombs()
     
-});
-const dim = 9;
-var posibleNumberOfBombs = 5;
-var gameBoard = [];
+})
+const dim = 9
+var posibleNumberOfBombs = 20
+var gameBoard = []
 
 // Initialize cell object
 class Cell {
+    _bombsAround = 0
     constructor(state, contains) {
-        this.state = state;
-        this.contains = contains;
+        this.state = state
+        this.contains = contains
     }
     updateContent(content) {
-        this.contains = content;
+        this.contains = content
     }
     updateState(newState) {
-        this.state = newState;
+        this.state = newState
     }
     getState() {
-        return this.state;
+        return this.state
     }
     getContent() {
-        return this.contains;
+        return this.contains
+    }
+    getBombs() {
+        return this._bombsAround
+    }
+    setSumBombs(sum) {
+        this._bombsAround = sum
     }
 }
 
 function Create2DArray(dim) {
     for (let row = 0; row < dim; ++row) {
-        gameBoard.push(new Array(dim).fill(new Cell('', ''))); // initializing cells. 
+        gameBoard.push(new Array(dim).fill(new Cell('', ''))) // initializing cells. 
         for (let col = 0; col < dim; ++col) {
-            gameBoard[row][col] = new Cell("notClicked", "empty"); // assigning a new Cell object to positions from 1 - 10 array. 
+            gameBoard[row][col] = new Cell("notClicked", "empty") // assigning a new Cell object to positions from 1 - 10 array. 
         }
-    };
-    console.table(gameBoard);
+    }
+    console.table(gameBoard)
 }
 
 // Decide if a table cell shall hold a bomb or not based on a given probability
 function placeBomb() {
-    let notRandomNumbers = [0, 0, 0, 0, 0, 0, 0, 0, 0, 1]; // Here I decide the probability of 0's or 1's. 
-    let id = Math.floor(Math.random() * notRandomNumbers.length);
-    return notRandomNumbers[id];
+    let notRandomNumbers = [0, 0, 0, 0, 0, 0, 0, 0, 0, 1] // Here I decide the probability of 0's or 1's. 
+    let id = Math.floor(Math.random() * notRandomNumbers.length)
+    return notRandomNumbers[id]
 }
 
 function deployBombs(numberOfBombs) {
     for (let i = 0; i < dim && numberOfBombs; ++i) {
         for (let j = 0; j < dim && numberOfBombs; ++j) {
             if (gameBoard[i][j].getContent() == "empty" && placeBomb()) {
-                gameBoard[i][j].updateContent("bomb");
-                --numberOfBombs;
+                gameBoard[i][j].updateContent("bomb")
+                --numberOfBombs
             }
         }
     }
     if (numberOfBombs) { // if not all bombs deployed
-        deployBombs(numberOfBombs);
+        deployBombs(numberOfBombs)
     }
 }
+
+function sumOfBombs() {
+    for (let i = 0; i < dim; i++) {
+        for (let j = 0; j < dim; j++) {
+            let sum = 0
+            if (!verifyN(i, j)) {
+                ++sum
+            }
+            if (!verifyNE(i, j)) {
+                ++sum
+            }
+            if (!verifyNW(i, j)) {
+                ++sum
+            }
+            if (!verifyS(i, j)) {
+                ++sum
+            }
+            if (!verifySE(i, j)) {
+                ++sum
+            }
+            if (!verifySW(i, j)) {
+                ++sum
+            }
+            if (!verifyE(i, j)) {
+                ++sum
+            }
+            if (!verifyW(i, j)) {
+                ++sum
+            }
+            gameBoard[i][j].setSumBombs(sum)
+        }
+    }
+}
+
 
 // create the HTML table
 function tableCreate() {
     const body = document.body,
-        table = document.createElement('table');
+        table = document.createElement('table')
     for (let i = 0; i < dim; i++) {
-        const tr = table.insertRow();
+        const tr = table.insertRow()
         for (let j = 0; j < dim; j++) {
-            const td = tr.insertCell();
-            td.setAttribute("id", `${i},${j}`);
+            const td = tr.insertCell()
+            td.setAttribute("id", `${i},${j}`)
             td.addEventListener("contextmenu", (event) => {
-                event.preventDefault();
-                addFlag(i, j);
-            }, { once: true }); // added so that this event listener only executes once and ads a flag
-            td.setAttribute("onclick", `leftClick(${i}, ${j})`);
+                event.preventDefault()
+                addFlag(i, j)
+            }, { once: true }) // added so that this event listener only executes once and ads a flag
+            td.setAttribute("onclick", `leftClick(${i}, ${j})`)
         }
     }
-    body.appendChild(table);
+    body.appendChild(table)
 }
 
 // helper to show where the bombs are located for debugging
@@ -93,17 +135,17 @@ function revealBombs() {
 
 // add a flag on HTML table on right click
 function addFlag(i, j) {
-    gameBoard[i][j].updateState("clicked");
-    var tableCellId = document.getElementById(`${i},${j}`);
-    var image = document.createElement("img");
-    image.src = "assets/icons/flag.png";
-    tableCellId.appendChild(image);
+    gameBoard[i][j].updateState("clicked")
+    var tableCellId = document.getElementById(`${i},${j}`)
+    var image = document.createElement("img")
+    image.src = "assets/icons/flag.png"
+    tableCellId.appendChild(image)
 }
 
 // on left click function
 function leftClick(i, j) {
-    var tableCellId = document.getElementById(`${i},${j}`);
-    tableCellId.setAttribute("onclick", "");
+    var tableCellId = document.getElementById(`${i},${j}`)
+    tableCellId.setAttribute("onclick", "")
     if (gameBoard[i][j].getContent() == "bomb") {
         addBomb(i, j)
     } else {
@@ -124,36 +166,36 @@ function showNoBombCells(i, j) { // starting from i, j show all cells that have 
     if (checkSurroundingCells(i, j)) {
         revealCell(i, j)
         if (i > 0 && getState(i - 1, j) == "notClicked" && checkSurroundingCells(i - 1, j)) { // North
-            revealCell(i - 1, j);
+            revealCell(i - 1, j)
             showNoBombCells(i - 1, j)
         }
         if (i > 0 && j < dim - 1 && getState(i - 1, j + 1) == "notClicked" && checkSurroundingCells(i - 1, j + 1)) { // NorthE
-            revealCell(i - 1, j + 1);
-            showNoBombCells(i - 1, j + 1);
+            revealCell(i - 1, j + 1)
+            showNoBombCells(i - 1, j + 1)
         }
         if (i > 0 && j > 0 && getState(i - 1, j - 1) == "notClicked" && checkSurroundingCells(i - 1, j - 1)) {
             revealCell(i - 1, j - 1)
             showNoBombCells(i - 1, j - 1)
         }
         if (i < dim - 1 && getState(i + 1, j) == "notClicked" && checkSurroundingCells(i + 1, j)) { // South
-            revealCell(i + 1, j);
-            showNoBombCells(i + 1, j);
+            revealCell(i + 1, j)
+            showNoBombCells(i + 1, j)
         }
         if (i < dim - 1 && j < dim - 1 && getState(i + 1, j + 1) == "notClicked" && checkSurroundingCells(i + 1, j + 1)) { //SouthE
-            revealCell(i + 1, j + 1);
-            showNoBombCells(i + 1, j + 1);
+            revealCell(i + 1, j + 1)
+            showNoBombCells(i + 1, j + 1)
         }
         if (i < dim - 1 && j > 0 && getState(i + 1, j - 1) == "notClicked" && checkSurroundingCells(i + 1, j - 1)) { //SouthW
-            revealCell(i + 1, j - 1);
-            showNoBombCells(i + 1, j - 1);
+            revealCell(i + 1, j - 1)
+            showNoBombCells(i + 1, j - 1)
         }
         if (j < dim - 1 && getState(i, j + 1) == "notClicked" && checkSurroundingCells(i, j + 1)) { //East
-            revealCell(i, j + 1);
-            showNoBombCells(i, j + 1);
+            revealCell(i, j + 1)
+            showNoBombCells(i, j + 1)
         }
         if (j > 0 && getState(i, j - 1) == "notClicked" && checkSurroundingCells(i, j - 1)) { //West
-            revealCell(i, j - 1);
-            showNoBombCells(i, j - 1);
+            revealCell(i, j - 1)
+            showNoBombCells(i, j - 1)
         }
     } else {
         return
@@ -166,102 +208,105 @@ function showNoBombCells(i, j) { // starting from i, j show all cells that have 
 function verifyN(i, j) { // returns true when no bomb is detected
     if (i > 0) {
         if (getContent(i - 1, j) == "bomb") {
-            return false;
+            return false
         }
-        return true;
+        return true
     }
-    return true;
+    return true
 }
 
 function verifyNE(i, j) {
     if (i > 0 && j < dim - 1) {
         if (getContent(i - 1, j + 1) == "bomb") {
-            return false;
+            return false
         }
-        return true;
+        return true
     }
-    return true;
+    return true
 }
 
 function verifyNW(i, j) {
     if (i > 0 && j > 0) {
         if (getContent(i - 1, j - 1) == "bomb") {
-            return false;
+            return false
         }
-        return true;
+        return true
     }
-    return true;
+    return true
 }
 
 //South
 function verifyS(i, j) {
       if (i < dim - 1) {
         if (getContent(i + 1, j) == "bomb") {
-            return false;
+            return false
         }
-        return true;
+        return true
     }
-    return true;
+    return true
 }
 
 function verifySE(i, j) {
        if (i < dim - 1 && j < dim - 1) {
         if (getContent(i + 1, j + 1) == "bomb") {
-            return false;
+            return false
         }
-        return true;
+        return true
     }
-    return true;
+    return true
 }
 
 function verifySW(i, j) {
        if (i < dim - 1 && j > 0) {
         if (getContent(i + 1, j - 1) == "bomb") {
-            return false;
+            return false
         }
-        return true;
+        return true
     }
-    return true;
+    return true
 }
 
 //East
 function verifyE(i, j) {
       if (j < dim - 1) {
         if (getContent(i, j + 1) == "bomb") {
-            return false;
+            return false
         }
-        return true;
+        return true
     }
-    return true;
+    return true
 }
 
 // West
 function verifyW(i, j) {
       if (j > 0) {
         if (getContent(i, j - 1) == "bomb") {
-            return false;
+            return false
         }
-        return true;
+        return true
     }
-    return true;
+    return true
 }
 
 // add a bomb on HTML table
 function addBomb(i, j) {
-    gameBoard[i][j].updateState("inactive");
-    var tableCellId = document.getElementById(`${i},${j}`);
-    tableCellId.style.background = "red";
-    var image = document.createElement("img");
-    image.src = "assets/icons/bomb.png";
-    tableCellId.appendChild(image);
+    gameBoard[i][j].updateState("inactive")
+    var tableCellId = document.getElementById(`${i},${j}`)
+    tableCellId.style.background = "red"
+    var image = document.createElement("img")
+    image.src = "assets/icons/bomb.png"
+    tableCellId.appendChild(image)
 }
 
 // reveal the cell
 function revealCell(i, j) {
     if (gameBoard[i][j].getState() != "clicked") {
-        var tableCellId = document.getElementById(`${i},${j}`);
-        tableCellId.style.background = "white";
-        tableCellId.setAttribute("onclick", "");
+        var tableCellId = document.getElementById(`${i},${j}`)
+        tableCellId.style.background = "white"
+        if (gameBoard[i][j].getBombs() > 0) {
+            tableCellId.innerHTML = gameBoard[i][j].getBombs()
+        }
+        tableCellId.setAttribute("onclick", "")
         gameBoard[i][j].updateState("clicked")
     } else {
         return
@@ -271,12 +316,12 @@ function revealCell(i, j) {
 // get the content of a cell
 function getContent(i, j) {
     if ((j <= dim - 1) && (i <= dim - 1)) {
-        return gameBoard[i][j].getContent();
+        return gameBoard[i][j].getContent()
     }
     
 }
 // get the state of a cell
 function getState(i, j) {
-    return gameBoard[i][j].getState();
+    return gameBoard[i][j].getState()
 }
 
