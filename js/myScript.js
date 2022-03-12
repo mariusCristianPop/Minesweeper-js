@@ -6,7 +6,6 @@ document.addEventListener("DOMContentLoaded", function () {
 })
 const dim = 9
 var posibleNumberOfBombs = 5
-var remainingNumberOfBombs = posibleNumberOfBombs;
 var gameBoard = []
 var firstClick = true;
 
@@ -163,6 +162,7 @@ function leftClick(i, j) {
         revealCell(i, j)
         showNoBombCells(i, j)
         startTimmer()
+        setRemainingNumberOfBombs()
         firstClick = false
     } else if (gameBoard[i][j].getContent() == 'bomb') {
         addBomb(i, j)
@@ -354,3 +354,13 @@ function startTimmer() {
 }
 
 
+function setRemainingNumberOfBombs(sign) {
+    var el = document.getElementById("remainingBombs")
+    if (sign == "-") {
+        el.innerHTML = posibleNumberOfBombs -= 1
+    } else if (sign == "+") {
+        el.innerHTML = posibleNumberOfBombs += 1
+    } else {
+        el.innerHTML = posibleNumberOfBombs
+    }
+}
