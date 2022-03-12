@@ -4,8 +4,10 @@ document.addEventListener("DOMContentLoaded", function () {
     tableCreate()
     
 })
-const dim = 9
-var posibleNumberOfBombs = 5
+const dim = 11
+let timmerID;
+var gameOver = false;
+var posibleNumberOfBombs = 50
 var gameBoard = []
 var firstClick = true;
 
@@ -104,7 +106,7 @@ function sumOfBombs() {
 
 // create the HTML table
 function tableCreate() {
-    const body = document.body,
+    const body = document.body
     table = document.createElement('table')
     for (let i = 0; i < dim; i++) {
         const tr = table.insertRow()
@@ -134,13 +136,13 @@ function revealBombs() {
 
 // add a flag on HTML table on right click
 function addFlag(i, j) {
-    if (gameBoard[i][j].getContent() == "flag") {
+    if (gameBoard[i][j].getContent() == "flag" && !gameOver) {
         setRemainingNumberOfBombs("+")
         gameBoard[i][j].updateContent("empty")
         gameBoard[i][j].updateState("notClicked")
         var tableCellId = document.getElementById(`${i},${j}`)
         tableCellId.removeChild(tableCellId.firstChild)
-    } else {
+    } else if (gameBoard[i][j].getContent() != "flag" && !gameOver) {
         gameBoard[i][j].updateContent("flag")
         setRemainingNumberOfBombs("-")
         var tableCellId = document.getElementById(`${i},${j}`)
@@ -165,7 +167,7 @@ function leftClick(i, j) {
         setRemainingNumberOfBombs()
         firstClick = false
     } else if (gameBoard[i][j].getContent() == 'bomb') {
-        addBomb(i, j)
+        endGame()
     } else {
         revealCell(i, j)
         showNoBombCells(i, j)
@@ -308,8 +310,9 @@ function verifyW(i, j) {
 
 // add a bomb on HTML table
 function addBomb(i, j) {
-    gameBoard[i][j].updateState("inactive")
     var tableCellId = document.getElementById(`${i},${j}`)
+    tableCellId.setAttribute("onclick", "")
+    gameBoard[i][j].updateState("clicked")
     tableCellId.style.background = "red"
     var image = document.createElement("img")
     image.src = "assets/icons/bomb.png"
@@ -347,7 +350,7 @@ function getState(i, j) {
 function startTimmer() {
     var sec = 0;
     function pad ( val ) { return val > 9 ? val : "0" + val; }
-    setInterval( function(){
+    timmerID = setInterval( function(){
         document.getElementById("seconds").innerHTML=pad(++sec%60);
         document.getElementById("minutes").innerHTML=pad(parseInt(sec/60,10));
     }, 1000);
@@ -362,5 +365,27 @@ function setRemainingNumberOfBombs(sign) {
         el.innerHTML = posibleNumberOfBombs += 1
     } else {
         el.innerHTML = posibleNumberOfBombs
+    }
+}
+
+function endGame() {
+    console.log("Game over")
+    gameOver = true
+    clearInterval(timmerID) // stops the timmer
+    showAllBombs()
+    const body = document.body
+    var el = document.createElement("p")
+    el.innerHTML = "Refresh the page to play again"
+    body.appendChild(el)
+}
+
+function showAllBombs() {
+    for (let i = 0; i < dim; ++i) {
+        for (let j = 0; j < dim; ++j) {
+            if (gameBoard[i][j].getContent() == "bomb") {
+                addBomb(i, j)
+            }
+            gameBoard[i][j].updateState("clicked")
+        }
     }
 }
