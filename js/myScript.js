@@ -6,6 +6,7 @@ document.addEventListener("DOMContentLoaded", function () {
 })
 const dim = 9
 var posibleNumberOfBombs = 5
+var remainingNumberOfBombs = posibleNumberOfBombs;
 var gameBoard = []
 var firstClick = true;
 
@@ -135,12 +136,14 @@ function revealBombs() {
 // add a flag on HTML table on right click
 function addFlag(i, j) {
     if (gameBoard[i][j].getContent() == "flag") {
+        setRemainingNumberOfBombs("+")
         gameBoard[i][j].updateContent("empty")
         gameBoard[i][j].updateState("notClicked")
         var tableCellId = document.getElementById(`${i},${j}`)
         tableCellId.removeChild(tableCellId.firstChild)
     } else {
         gameBoard[i][j].updateContent("flag")
+        setRemainingNumberOfBombs("-")
         var tableCellId = document.getElementById(`${i},${j}`)
         var image = document.createElement("img")
         image.src = "assets/icons/flag.png"
