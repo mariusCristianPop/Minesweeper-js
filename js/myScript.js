@@ -114,7 +114,7 @@ function tableCreate() {
             td.addEventListener("contextmenu", (event) => {
                 event.preventDefault()
                 addFlag(i, j)
-            }, { once: true }) // added so that this event listener only executes once and ads a flag
+            },)
             td.setAttribute("onclick", `leftClick(${i}, ${j})`)
         }
     }
@@ -134,11 +134,19 @@ function revealBombs() {
 
 // add a flag on HTML table on right click
 function addFlag(i, j) {
-    gameBoard[i][j].updateState("clicked")
-    var tableCellId = document.getElementById(`${i},${j}`)
-    var image = document.createElement("img")
-    image.src = "assets/icons/flag.png"
-    tableCellId.appendChild(image)
+    if (gameBoard[i][j].getContent() == "flag") {
+        gameBoard[i][j].updateContent("empty")
+        gameBoard[i][j].updateState("notClicked")
+        var tableCellId = document.getElementById(`${i},${j}`)
+        tableCellId.removeChild(tableCellId.firstChild)
+    } else {
+        gameBoard[i][j].updateContent("flag")
+        var tableCellId = document.getElementById(`${i},${j}`)
+        var image = document.createElement("img")
+        image.src = "assets/icons/flag.png"
+        tableCellId.appendChild(image)
+    }
+    
 }
 
 // on left click function
