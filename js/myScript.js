@@ -171,35 +171,35 @@ function checkSurroundingCells(i, j) {
 function showNoBombCells(i, j) { // starting from i, j show all cells that have no bombs around
     if (checkSurroundingCells(i, j)) {
         revealCell(i, j)
-        if (i > 0 && getState(i - 1, j) == "notClicked" && checkSurroundingCells(i - 1, j)) { // North
+        if (i > 0 && getState(i - 1, j) == "notClicked" ) { // North
             revealCell(i - 1, j)
             showNoBombCells(i - 1, j)
         }
-        if (i > 0 && j < dim - 1 && getState(i - 1, j + 1) == "notClicked" && checkSurroundingCells(i - 1, j + 1)) { // NorthE
+        if (i > 0 && j < dim - 1 && getState(i - 1, j + 1) == "notClicked") { // NorthE
             revealCell(i - 1, j + 1)
             showNoBombCells(i - 1, j + 1)
         }
-        if (i > 0 && j > 0 && getState(i - 1, j - 1) == "notClicked" && checkSurroundingCells(i - 1, j - 1)) {
+        if (i > 0 && j > 0 && getState(i - 1, j - 1) == "notClicked") {
             revealCell(i - 1, j - 1)
             showNoBombCells(i - 1, j - 1)
         }
-        if (i < dim - 1 && getState(i + 1, j) == "notClicked" && checkSurroundingCells(i + 1, j)) { // South
+        if (i < dim - 1 && getState(i + 1, j) == "notClicked" ) { // South
             revealCell(i + 1, j)
             showNoBombCells(i + 1, j)
         }
-        if (i < dim - 1 && j < dim - 1 && getState(i + 1, j + 1) == "notClicked" && checkSurroundingCells(i + 1, j + 1)) { //SouthE
+        if (i < dim - 1 && j < dim - 1 && getState(i + 1, j + 1) == "notClicked") { //SouthE
             revealCell(i + 1, j + 1)
             showNoBombCells(i + 1, j + 1)
         }
-        if (i < dim - 1 && j > 0 && getState(i + 1, j - 1) == "notClicked" && checkSurroundingCells(i + 1, j - 1)) { //SouthW
+        if (i < dim - 1 && j > 0 && getState(i + 1, j - 1) == "notClicked") { //SouthW
             revealCell(i + 1, j - 1)
             showNoBombCells(i + 1, j - 1)
         }
-        if (j < dim - 1 && getState(i, j + 1) == "notClicked" && checkSurroundingCells(i, j + 1)) { //East
+        if (j < dim - 1 && getState(i, j + 1) == "notClicked") { //East
             revealCell(i, j + 1)
             showNoBombCells(i, j + 1)
         }
-        if (j > 0 && getState(i, j - 1) == "notClicked" && checkSurroundingCells(i, j - 1)) { //West
+        if (j > 0 && getState(i, j - 1) == "notClicked") { //West
             revealCell(i, j - 1)
             showNoBombCells(i, j - 1)
         }
