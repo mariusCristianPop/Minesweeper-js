@@ -158,6 +158,7 @@ function leftClick(i, j) {
     var tableCellId = document.getElementById(`${i},${j}`)
     tableCellId.setAttribute("onclick", "")
     if (firstClick) {
+        gameBoard[i][j].updateState("clicked")
         deployBombs(posibleNumberOfBombs)
         //revealBombs()
         sumOfBombs()
@@ -171,6 +172,9 @@ function leftClick(i, j) {
     } else {
         revealCell(i, j)
         showNoBombCells(i, j)
+    }
+    if (!gameOver) {
+        checkWinner()
     }
 }
 
@@ -310,18 +314,20 @@ function verifyW(i, j) {
 
 // add a bomb on HTML table
 function addBomb(i, j) {
-    var tableCellId = document.getElementById(`${i},${j}`)
-    tableCellId.setAttribute("onclick", "")
-    gameBoard[i][j].updateState("clicked")
-    tableCellId.style.background = "red"
-    var image = document.createElement("img")
-    image.src = "assets/icons/bomb.png"
-    tableCellId.appendChild(image)
+    if (gameBoard[i][j].getState() != "bomb") {
+        var tableCellId = document.getElementById(`${i},${j}`)
+        tableCellId.setAttribute("onclick", "")
+        gameBoard[i][j].updateState("clicked")
+        tableCellId.style.background = "red"
+        var image = document.createElement("img")
+        image.src = "assets/icons/bomb.png"
+        tableCellId.appendChild(image)
+    }
 }
 
 // reveal the cell
 function revealCell(i, j) {
-    if (gameBoard[i][j].getState() != "clicked") {
+    if (gameBoard[i][j].getContent() != "bomb") {
         var tableCellId = document.getElementById(`${i},${j}`)
         tableCellId.style.background = "white"
         if (gameBoard[i][j].getBombs() > 0) {
@@ -375,7 +381,7 @@ function endGame() {
     showAllBombs()
     const body = document.body
     var el = document.createElement("p")
-    el.innerHTML = "Refresh the page to play again"
+    el.innerHTML = "You lost! Refresh the page to play again"
     body.appendChild(el)
 }
 
@@ -387,5 +393,26 @@ function showAllBombs() {
             }
             gameBoard[i][j].updateState("clicked")
         }
+    }
+}
+
+function checkWinner() {
+    let counter = 0;
+    for (let i = 0; i < dim; ++i) {
+        for (let j = 0; j < dim; ++j) {
+            if (gameBoard[i][j].getState() == "clicked") {
+                ++counter
+            }
+        }
+    }
+    if (counter == Math.pow(dim, 2) - posibleNumberOfBombs) {
+        gameOver = true
+        clearInterval(timmerID) // stops the timmer
+        showAllBombs()
+        const body = document.body
+        var el = document.createElement("p")
+        el.innerHTML = "You won! Refresh the page to play again"
+        body.appendChild(el)
+
     }
 }
