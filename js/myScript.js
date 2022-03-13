@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", function () {
 const dim = 11
 let timmerID;
 var gameOver = false;
-var posibleNumberOfBombs = 50
+var posibleNumberOfBombs = 25
 var gameBoard = []
 var firstClick = true;
 
@@ -166,7 +166,6 @@ function leftClick(i, j) {
         showNoBombCells(i, j)
         startTimmer()
         setRemainingNumberOfBombs()
-        firstClick = false
     } else if (gameBoard[i][j].getContent() == 'bomb') {
         endGame()
     } else {
@@ -327,7 +326,17 @@ function addBomb(i, j) {
 
 // reveal the cell
 function revealCell(i, j) {
-    if (gameBoard[i][j].getContent() != "bomb") {
+    if (firstClick) {
+        firstClick = false
+        var tableCellId = document.getElementById(`${i},${j}`)
+        tableCellId.style.background = "white"
+        if (gameBoard[i][j].getBombs() > 0) {
+            tableCellId.innerHTML = gameBoard[i][j].getBombs()
+        }
+        tableCellId.setAttribute("onclick", "")
+        gameBoard[i][j].updateState("clicked")
+    }
+    if (gameBoard[i][j].getState() != "clicked") {
         var tableCellId = document.getElementById(`${i},${j}`)
         tableCellId.style.background = "white"
         if (gameBoard[i][j].getBombs() > 0) {
