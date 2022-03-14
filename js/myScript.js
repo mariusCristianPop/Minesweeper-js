@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", function () {
     
 })
 
-// 1. Declare constants
+// 1. Variables declaration
 const dim = 11
 let timmerID;
 var gameOver = false;
