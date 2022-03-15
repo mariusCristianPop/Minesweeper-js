@@ -76,13 +76,13 @@ function addFlag(i, j) {
         setRemainingNumberOfBombs("+")
         gameBoard[i][j].updateContent("empty")
         gameBoard[i][j].updateState("notClicked")
-        var tableCellId = document.getElementById(`${i},${j}`)
+        let tableCellId = document.getElementById(`${i},${j}`)
         tableCellId.removeChild(tableCellId.firstChild)
     } else if (gameBoard[i][j].getContent() != "flag" && !gameOver) {
         gameBoard[i][j].updateContent("flag")
         setRemainingNumberOfBombs("-")
-        var tableCellId = document.getElementById(`${i},${j}`)
-        var image = document.createElement("img")
+        let tableCellId = document.getElementById(`${i},${j}`)
+        let image = document.createElement("img")
         image.src = "assets/icons/flag.png"
         tableCellId.appendChild(image)
     }
@@ -90,7 +90,7 @@ function addFlag(i, j) {
 
 // 6. Left click functionality
 function leftClick(i, j) {
-    var tableCellId = document.getElementById(`${i},${j}`)
+    let tableCellId = document.getElementById(`${i},${j}`)
     tableCellId.setAttribute("onclick", "")
     if (firstClick) {
         gameBoard[i][j].updateState("clicked")
@@ -151,7 +151,7 @@ function sumOfBombs() {
 function revealCell(i, j) {
     if (gameBoard[i][j].getState() != "clicked" || firstClick) {
         firstClick = false
-        var tableCellId = document.getElementById(`${i},${j}`)
+        let tableCellId = document.getElementById(`${i},${j}`)
         tableCellId.style.background = "white"
         if (gameBoard[i][j].getBombs() > 0) {
             tableCellId.innerHTML = gameBoard[i][j].getBombs()
@@ -251,7 +251,7 @@ function verifyAllNeighbourCells(i, j) {
 
 // 12. Game timmer functionality
 function startTimmer() {
-    var sec = 0;
+    let sec = 0;
     function pad ( val ) { return val > 9 ? val : "0" + val}
     timmerID = setInterval( function(){
         document.getElementById("seconds").innerHTML=pad(++sec%60)
@@ -261,7 +261,7 @@ function startTimmer() {
 
 // 13. Sets the variable that holds the number of bombs
 function setRemainingNumberOfBombs(sign) {
-    var el = document.getElementById("remainingBombs")
+    let el = document.getElementById("remainingBombs")
     if (sign == "-") {
         el.innerHTML = posibleNumberOfBombs -= 1
     } else if (sign == "+") {
@@ -274,11 +274,11 @@ function setRemainingNumberOfBombs(sign) {
 // 14. Add a bomb on HTML table
 function addBomb(i, j) {
     if (gameBoard[i][j].getState() != "bomb") {
-        var tableCellId = document.getElementById(`${i},${j}`)
+        let tableCellId = document.getElementById(`${i},${j}`)
         tableCellId.setAttribute("onclick", "")
         gameBoard[i][j].updateState("clicked")
         tableCellId.style.background = "red"
-        var image = document.createElement("img")
+        let image = document.createElement("img")
         image.src = "assets/icons/bomb.png"
         tableCellId.appendChild(image)
     }
@@ -306,7 +306,7 @@ function endGame(string) {
     clearInterval(timmerID) // stops the timmer
     showAllBombs()
     const body = document.body
-    var el = document.createElement("p")
+    let el = document.createElement("p")
     el.innerHTML = string
     body.appendChild(el)
 }
