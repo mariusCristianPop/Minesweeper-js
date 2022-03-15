@@ -1,13 +1,13 @@
 document.addEventListener("DOMContentLoaded", function () {
     // wait for the html page to load before executing the script or else appending to body will result in an error
-    Create2DArray(dim)
+    Create2DArray(MAX_SIZE)
     tableCreate()
     
 })
 
 // 1. Variables declaration
-const dim = 11
-let timmerID;
+const MAX_SIZE = 11
+var timmerID;
 var gameOver = false;
 var posibleNumberOfBombs = 25
 var gameBoard = []
@@ -40,11 +40,11 @@ class Cell {
     }
 }
 
-// 3. Create the 2 dimmensional array
-function Create2DArray(dim) {
-    for (let row = 0; row < dim; ++row) {
-        gameBoard.push(new Array(dim).fill(new Cell('', ''))) // initializing cells. 
-        for (let col = 0; col < dim; ++col) {
+// 3. Create the 2 MAX_SIZEmensional array
+function Create2DArray(MAX_SIZE) {
+    for (let row = 0; row < MAX_SIZE; ++row) {
+        gameBoard.push(new Array(MAX_SIZE).fill(new Cell('', ''))) // initializing cells. 
+        for (let col = 0; col < MAX_SIZE; ++col) {
             gameBoard[row][col] = new Cell("notClicked", "empty") // assigning a new Cell object to positions from 1 - 10 array. 
         }
     }
@@ -55,9 +55,9 @@ function Create2DArray(dim) {
 function tableCreate() {
     const body = document.body
     table = document.createElement('table')
-    for (let i = 0; i < dim; i++) {
+    for (let i = 0; i < MAX_SIZE; i++) {
         const tr = table.insertRow()
-        for (let j = 0; j < dim; j++) {
+        for (let j = 0; j < MAX_SIZE; j++) {
             const td = tr.insertCell()
             td.setAttribute("id", `${i},${j}`)
             td.addEventListener("contextmenu", (event) => {
@@ -114,8 +114,8 @@ function leftClick(i, j) {
 
 // 7. Randomly place the bombs inside the array
 function deployBombs(numberOfBombs) {
-    for (let i = 0; i < dim && numberOfBombs; ++i) {
-        for (let j = 0; j < dim && numberOfBombs; ++j) {
+    for (let i = 0; i < MAX_SIZE && numberOfBombs; ++i) {
+        for (let j = 0; j < MAX_SIZE && numberOfBombs; ++j) {
             if (gameBoard[i][j].getState() == "notClicked" && placeBomb()) {
                 gameBoard[i][j].updateContent("bomb")
                 --numberOfBombs
@@ -136,8 +136,8 @@ function placeBomb() {
 
 // 8. Sum up the bombs around a given cell
 function sumOfBombs() {
-    for (let i = 0; i < dim; i++) {
-        for (let j = 0; j < dim; j++) {
+    for (let i = 0; i < MAX_SIZE; i++) {
+        for (let j = 0; j < MAX_SIZE; j++) {
             let sum = 0
             if (!verifyAllNeighbourCells(i, j)) {
                 ++sum
@@ -171,7 +171,7 @@ function showNoBombCells(i, j) { // starting from i, j show all cells that have 
             revealCell(i - 1, j)
             showNoBombCells(i - 1, j)
         }
-        if (i > 0 && j < dim - 1 && getState(i - 1, j + 1) == "notClicked") { // NorthE
+        if (i > 0 && j < MAX_SIZE - 1 && getState(i - 1, j + 1) == "notClicked") { // NorthE
             revealCell(i - 1, j + 1)
             showNoBombCells(i - 1, j + 1)
         }
@@ -179,19 +179,19 @@ function showNoBombCells(i, j) { // starting from i, j show all cells that have 
             revealCell(i - 1, j - 1)
             showNoBombCells(i - 1, j - 1)
         }
-        if (i < dim - 1 && getState(i + 1, j) == "notClicked" ) { // South
+        if (i < MAX_SIZE - 1 && getState(i + 1, j) == "notClicked" ) { // South
             revealCell(i + 1, j)
             showNoBombCells(i + 1, j)
         }
-        if (i < dim - 1 && j < dim - 1 && getState(i + 1, j + 1) == "notClicked") { //SouthE
+        if (i < MAX_SIZE - 1 && j < MAX_SIZE - 1 && getState(i + 1, j + 1) == "notClicked") { //SouthE
             revealCell(i + 1, j + 1)
             showNoBombCells(i + 1, j + 1)
         }
-        if (i < dim - 1 && j > 0 && getState(i + 1, j - 1) == "notClicked") { //SouthW
+        if (i < MAX_SIZE - 1 && j > 0 && getState(i + 1, j - 1) == "notClicked") { //SouthW
             revealCell(i + 1, j - 1)
             showNoBombCells(i + 1, j - 1)
         }
-        if (j < dim - 1 && getState(i, j + 1) == "notClicked") { //East
+        if (j < MAX_SIZE - 1 && getState(i, j + 1) == "notClicked") { //East
             revealCell(i, j + 1)
             showNoBombCells(i, j + 1)
         }
@@ -211,7 +211,7 @@ function verifyAllNeighbourCells(i, j) {
             return false
         }
     }
-    if (i > 0 && j < dim - 1) { // NorthE
+    if (i > 0 && j < MAX_SIZE - 1) { // NorthE
         if (getContent(i - 1, j + 1) == "bomb") {
             return false
         }
@@ -221,22 +221,22 @@ function verifyAllNeighbourCells(i, j) {
             return false
         }
     }
-    if (i < dim - 1) { // South
+    if (i < MAX_SIZE - 1) { // South
         if (getContent(i + 1, j) == "bomb") {
             return false
         }
     }
-    if (i < dim - 1 && j < dim - 1) { // SouthE
+    if (i < MAX_SIZE - 1 && j < MAX_SIZE - 1) { // SouthE
         if (getContent(i + 1, j + 1) == "bomb") {
             return false
         }
     }
-    if (i < dim - 1 && j > 0) { // SouthW
+    if (i < MAX_SIZE - 1 && j > 0) { // SouthW
         if (getContent(i + 1, j - 1) == "bomb") {
             return false
         }
     }
-    if (j < dim - 1) { //East
+    if (j < MAX_SIZE - 1) { //East
         if (getContent(i, j + 1) == "bomb") {
             return false
         }
@@ -287,14 +287,14 @@ function addBomb(i, j) {
 // 15. Checks if all non bomb cells are revealed
 function checkWinner() {
     let counter = 0;
-    for (let i = 0; i < dim; ++i) {
-        for (let j = 0; j < dim; ++j) {
+    for (let i = 0; i < MAX_SIZE; ++i) {
+        for (let j = 0; j < MAX_SIZE; ++j) {
             if (gameBoard[i][j].getState() == "clicked") {
                 ++counter
             }
         }
     }
-    if (counter == Math.pow(dim, 2) - posibleNumberOfBombs) {
+    if (counter == Math.pow(MAX_SIZE, 2) - posibleNumberOfBombs) {
         endGame("You won! Refresh the page to play again")
     }
 }
@@ -313,8 +313,8 @@ function endGame(string) {
 
 // 16.1 Shows all bombs
 function showAllBombs() {
-    for (let i = 0; i < dim; ++i) {
-        for (let j = 0; j < dim; ++j) {
+    for (let i = 0; i < MAX_SIZE; ++i) {
+        for (let j = 0; j < MAX_SIZE; ++j) {
             if (gameBoard[i][j].getContent() == "bomb") {
                 addBomb(i, j)
             }
@@ -325,7 +325,7 @@ function showAllBombs() {
 
 // 17. Get the content of a cell
 function getContent(i, j) {
-    if ((j <= dim - 1) && (i <= dim - 1)) {
+    if ((j <= MAX_SIZE - 1) && (i <= MAX_SIZE - 1)) {
         return gameBoard[i][j].getContent()
     }
     
@@ -338,8 +338,8 @@ function getState(i, j) {
 
 // 19. Show where the bombs are located (for debugging)
 function revealBombs() {
-    for (let i = 0; i < dim; i++) {
-        for (let j = 0; j < dim; j++) {
+    for (let i = 0; i < MAX_SIZE; i++) {
+        for (let j = 0; j < MAX_SIZE; j++) {
             if (gameBoard[i][j].getContent() == "bomb") {
                 addBomb(i, j)
             }
