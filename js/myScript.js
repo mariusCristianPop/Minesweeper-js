@@ -166,38 +166,18 @@ function revealCell(i, j) {
 // 10. Clear all cells and their neighbours recursively
 function showNoBombCells(i, j) { // starting from i, j show all cells that have no bombs around
     if (verifyAllNeighbourCells(i, j)) {
-        revealCell(i, j)
-        if (i > 0 && getState(i - 1, j) == "notClicked" ) { // North
-            revealCell(i - 1, j)
-            showNoBombCells(i - 1, j)
-        }
-        if (i > 0 && j < MAX_SIZE - 1 && getState(i - 1, j + 1) == "notClicked") { // NorthE
-            revealCell(i - 1, j + 1)
-            showNoBombCells(i - 1, j + 1)
-        }
-        if (i > 0 && j > 0 && getState(i - 1, j - 1) == "notClicked") { // NorthW
-            revealCell(i - 1, j - 1)
-            showNoBombCells(i - 1, j - 1)
-        }
-        if (i < MAX_SIZE - 1 && getState(i + 1, j) == "notClicked" ) { // South
-            revealCell(i + 1, j)
-            showNoBombCells(i + 1, j)
-        }
-        if (i < MAX_SIZE - 1 && j < MAX_SIZE - 1 && getState(i + 1, j + 1) == "notClicked") { //SouthE
-            revealCell(i + 1, j + 1)
-            showNoBombCells(i + 1, j + 1)
-        }
-        if (i < MAX_SIZE - 1 && j > 0 && getState(i + 1, j - 1) == "notClicked") { //SouthW
-            revealCell(i + 1, j - 1)
-            showNoBombCells(i + 1, j - 1)
-        }
-        if (j < MAX_SIZE - 1 && getState(i, j + 1) == "notClicked") { //East
-            revealCell(i, j + 1)
-            showNoBombCells(i, j + 1)
-        }
-        if (j > 0 && getState(i, j - 1) == "notClicked") { //West
-            revealCell(i, j - 1)
-            showNoBombCells(i, j - 1)
+        let linie_start, linie_final, coloana_start, coloana_final
+        linie_start = lineStart(i)
+        linie_final = lineFin(i)
+        coloana_start = colStart(j)
+        coloana_final = colFin(j)
+        for (let i2 = linie_start; i2 <= linie_final; ++i2) {
+            for (let j2 = coloana_start; j2 <= coloana_final; ++j2) {
+                if (getState(i2, j2) == "notClicked") {
+                    revealCell(i2, j2)
+                    showNoBombCells(i2, j2)
+                }
+            }
         }
     } else {
         return
@@ -344,5 +324,45 @@ function revealBombs() {
                 addBomb(i, j)
             }
         }
+    }
+}
+
+// 10.1 Decide the value of the start line
+function lineStart(i) {
+    if (i == 0) {
+        return i
+    }
+    if (i > 0 && i < MAX_SIZE - 1 || i == MAX_SIZE - 1) {
+        return i - 1
+    }
+}
+
+// 10.2 Decide the value of the final line
+function lineFin(i) {
+    if (i == 0 || i > 0 && i < MAX_SIZE - 1) {
+        return i + 1
+    }
+    if (i == MAX_SIZE - 1) {
+        return MAX_SIZE - 1
+    }
+}
+
+// 10.3 Decide the value of the start column
+function colStart(j) {
+    if (j == 0) {
+        return j
+    }
+    if (j > 0 && j < MAX_SIZE - 1 || j == MAX_SIZE - 1) {
+        return j - 1
+    }
+}
+
+// 10.4 Decide the value of the end column
+function colFin(j) {
+    if (j == 0 || j > 0 && j < MAX_SIZE - 1) {
+        return j + 1
+    }
+    if (j == MAX_SIZE - 1) {
+        return j
     }
 }
