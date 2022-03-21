@@ -186,47 +186,22 @@ function showNoBombCells(i, j) { // starting from i, j show all cells that have 
 
 // 11. Given a cell, check all its surrounding cells for bombs
 function verifyAllNeighbourCells(i, j) {
-    if (i > 0) { // North
-        if (getContent(i - 1, j) == "bomb") {
-            return false
+    let linie_start, linie_final, coloana_start, coloana_final, bombsSum = 0
+    linie_start = lineStart(i)
+    linie_final = lineFin(i)
+    coloana_start = colStart(j)
+    coloana_final = colFin(j)
+    for (let i2 = linie_start; i2 <= linie_final; ++i2) {
+        for (let j2 = coloana_start; j2 <= coloana_final; ++j2) {
+            if (getContent(i2, j2) == "bomb") {
+                ++bombsSum
+            }
         }
     }
-    if (i > 0 && j < MAX_SIZE - 1) { // NorthE
-        if (getContent(i - 1, j + 1) == "bomb") {
-            return false
-        }
+    if (bombsSum != 0) {
+        return false
     }
-    if (i > 0 && j > 0) { // NorthW
-        if (getContent(i - 1, j - 1) == "bomb") {
-            return false
-        }
-    }
-    if (i < MAX_SIZE - 1) { // South
-        if (getContent(i + 1, j) == "bomb") {
-            return false
-        }
-    }
-    if (i < MAX_SIZE - 1 && j < MAX_SIZE - 1) { // SouthE
-        if (getContent(i + 1, j + 1) == "bomb") {
-            return false
-        }
-    }
-    if (i < MAX_SIZE - 1 && j > 0) { // SouthW
-        if (getContent(i + 1, j - 1) == "bomb") {
-            return false
-        }
-    }
-    if (j < MAX_SIZE - 1) { //East
-        if (getContent(i, j + 1) == "bomb") {
-            return false
-        }
-    }
-    if (j > 0) { //West
-        if (getContent(i, j - 1) == "bomb") {
-            return false
-        }
-        return true
-    }
+    return true
 }
 
 // 12. Game timmer functionality
