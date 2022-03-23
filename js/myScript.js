@@ -167,10 +167,10 @@ function revealCell(i, j) {
 function showNoBombCells(i, j) { // starting from i, j show all cells that have no bombs around
     if (verifyAllNeighbourCells(i, j)) {
         let linie_start, linie_final, coloana_start, coloana_final
-        linie_start = lineStart(i)
-        linie_final = lineFin(i)
-        coloana_start = colStart(j)
-        coloana_final = colFin(j)
+        linie_start = lineColStart(i)
+        linie_final = lineColFin(i)
+        coloana_start = lineColStart(j)
+        coloana_final = lineColFin(j)
         for (let i2 = linie_start; i2 <= linie_final; ++i2) {
             for (let j2 = coloana_start; j2 <= coloana_final; ++j2) {
                 if (getState(i2, j2) == "notClicked") {
@@ -187,10 +187,10 @@ function showNoBombCells(i, j) { // starting from i, j show all cells that have 
 // 11. Given a cell, check all its surrounding cells for bombs
 function verifyAllNeighbourCells(i, j) {
     let linie_start, linie_final, coloana_start, coloana_final, bombsSum = 0
-    linie_start = lineStart(i)
-    linie_final = lineFin(i)
-    coloana_start = colStart(j)
-    coloana_final = colFin(j)
+    linie_start = lineColStart(i)
+    linie_final = lineColFin(i)
+    coloana_start = lineColStart(j)
+    coloana_final = lineColFin(j)
     for (let i2 = linie_start; i2 <= linie_final; ++i2) {
         for (let j2 = coloana_start; j2 <= coloana_final; ++j2) {
             if (getContent(i2, j2) == "bomb") {
@@ -302,42 +302,22 @@ function revealBombs() {
     }
 }
 
-// 10.1 Decide the value of the start line
-function lineStart(i) {
-    if (i == 0) {
-        return i
+// 10.1 Decide the value of the start line/column
+function lineColStart(k) {
+    if (k == 0) {
+        return k
     }
-    if (i > 0 && i < MAX_SIZE - 1 || i == MAX_SIZE - 1) {
-        return i - 1
-    }
-}
-
-// 10.2 Decide the value of the final line
-function lineFin(i) {
-    if (i == 0 || i > 0 && i < MAX_SIZE - 1) {
-        return i + 1
-    }
-    if (i == MAX_SIZE - 1) {
-        return MAX_SIZE - 1
+    if (k > 0 && k < MAX_SIZE - 1 || k == MAX_SIZE - 1) {
+        return k - 1
     }
 }
 
-// 10.3 Decide the value of the start column
-function colStart(j) {
-    if (j == 0) {
-        return j
+// 10.2 Decide the value of the final line/column
+function lineColFin(k) {
+    if (k == 0 || k > 0 && k < MAX_SIZE - 1) {
+        return k + 1
     }
-    if (j > 0 && j < MAX_SIZE - 1 || j == MAX_SIZE - 1) {
-        return j - 1
-    }
-}
-
-// 10.4 Decide the value of the end column
-function colFin(j) {
-    if (j == 0 || j > 0 && j < MAX_SIZE - 1) {
-        return j + 1
-    }
-    if (j == MAX_SIZE - 1) {
-        return j
+    if (k == MAX_SIZE - 1) {
+        return k
     }
 }
