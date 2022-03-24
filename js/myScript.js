@@ -167,10 +167,10 @@ function revealCell(i, j) {
 function showNoBombCells(i, j) { // starting from i, j show all cells that have no bombs around
     if (verifyAllNeighbourCells(i, j)) {
         let linie_start, linie_final, coloana_start, coloana_final
-        linie_start = lineColStart(i)
-        linie_final = lineColFin(i)
-        coloana_start = lineColStart(j)
-        coloana_final = lineColFin(j)
+        i == 0 ? linie_start = i : linie_start = i - 1
+        i == MAX_SIZE - 1 ? linie_final = i : linie_final = i + 1
+        j == 0 ? coloana_start = j : coloana_start = j - 1
+        j == MAX_SIZE - 1 ? coloana_final = j : coloana_final = j + 1
         for (let i2 = linie_start; i2 <= linie_final; ++i2) {
             for (let j2 = coloana_start; j2 <= coloana_final; ++j2) {
                 if (getState(i2, j2) == "notClicked") {
@@ -187,10 +187,10 @@ function showNoBombCells(i, j) { // starting from i, j show all cells that have 
 // 11. Given a cell, check all its surrounding cells for bombs
 function verifyAllNeighbourCells(i, j) {
     let linie_start, linie_final, coloana_start, coloana_final, bombsSum = 0
-    linie_start = lineColStart(i)
-    linie_final = lineColFin(i)
-    coloana_start = lineColStart(j)
-    coloana_final = lineColFin(j)
+    i == 0 ? linie_start = i : linie_start = i - 1
+    i == MAX_SIZE - 1 ? linie_final = i : linie_final = i + 1
+    j == 0 ? coloana_start = j : coloana_start = j - 1
+    j == MAX_SIZE - 1 ? coloana_final = j : coloana_final = j + 1
     for (let i2 = linie_start; i2 <= linie_final; ++i2) {
         for (let j2 = coloana_start; j2 <= coloana_final; ++j2) {
             if (getContent(i2, j2) == "bomb") {
@@ -299,25 +299,5 @@ function revealBombs() {
                 addBomb(i, j)
             }
         }
-    }
-}
-
-// 10.1 Decide the value of the start line/column
-function lineColStart(k) {
-    if (k == 0) {
-        return k
-    }
-    if (k > 0 && k < MAX_SIZE - 1 || k == MAX_SIZE - 1) {
-        return k - 1
-    }
-}
-
-// 10.2 Decide the value of the final line/column
-function lineColFin(k) {
-    if (k == 0 || k > 0 && k < MAX_SIZE - 1) {
-        return k + 1
-    }
-    if (k == MAX_SIZE - 1) {
-        return k
     }
 }
