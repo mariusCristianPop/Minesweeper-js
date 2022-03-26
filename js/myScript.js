@@ -166,16 +166,13 @@ function revealCell(i, j) {
 // 10. Clear all cells and their neighbours recursively
 function showNoBombCells(i, j) { // starting from i, j show all cells that have no bombs around
     if (verifyAllNeighbourCells(i, j)) {
-        let linie_start, linie_final, coloana_start, coloana_final
-        i == 0 ? linie_start = i : linie_start = i - 1
-        i == MAX_SIZE - 1 ? linie_final = i : linie_final = i + 1
-        j == 0 ? coloana_start = j : coloana_start = j - 1
-        j == MAX_SIZE - 1 ? coloana_final = j : coloana_final = j + 1
-        for (let i2 = linie_start; i2 <= linie_final; ++i2) {
-            for (let j2 = coloana_start; j2 <= coloana_final; ++j2) {
-                if (getState(i2, j2) == "notClicked") {
-                    revealCell(i2, j2)
-                    showNoBombCells(i2, j2)
+        for (let i2 = i - 1; i2 < i + 2; ++i2) {
+            for (let j2 = j - 1; j2 < j + 2; ++j2) {
+                if (i2 >= 0 && i2 <= MAX_SIZE - 1 && j2 >= 0 && j2 <= MAX_SIZE - 1) {
+                    if (getState(i2, j2) == "notClicked" && getContent(i2, j2) != "bomb") {
+                        revealCell(i2, j2)
+                        showNoBombCells(i2, j2)
+                    }
                 }
             }
         }
@@ -186,15 +183,14 @@ function showNoBombCells(i, j) { // starting from i, j show all cells that have 
 
 // 11. Given a cell, check all its surrounding cells for bombs
 function verifyAllNeighbourCells(i, j) {
-    let linie_start, linie_final, coloana_start, coloana_final, bombsSum = 0
-    i == 0 ? linie_start = i : linie_start = i - 1
-    i == MAX_SIZE - 1 ? linie_final = i : linie_final = i + 1
-    j == 0 ? coloana_start = j : coloana_start = j - 1
-    j == MAX_SIZE - 1 ? coloana_final = j : coloana_final = j + 1
-    for (let i2 = linie_start; i2 <= linie_final; ++i2) {
-        for (let j2 = coloana_start; j2 <= coloana_final; ++j2) {
-            if (getContent(i2, j2) == "bomb") {
-                ++bombsSum
+    let bombsSum = 0
+    
+    for (let i2 = i - 1; i2 < i + 2; ++i2) {
+        for (let j2 = j - 1; j2 < j + 2; ++j2) {
+            if (i2 >= 0 && i2 <= MAX_SIZE - 1 && j2 >= 0 && j2 <= MAX_SIZE - 1) {
+                if (getContent(i2, j2) == "bomb") {
+                    ++bombsSum
+                }
             }
         }
     }
